@@ -12,8 +12,6 @@ public class Waterdrop
     public float velocity ;
     private Random rnd = new Random();
     
-    //public bool isAlive = true;
-    
     
     
     public Waterdrop(Texture2D waterdrop, Vector2 pos)
@@ -25,12 +23,10 @@ public class Waterdrop
 
     public void Update(int w, float h)
     {
-        //_velocity += acceleration;
         _position.Y += velocity;
 
         if (_position.Y > h)
         {
-            //isAlive = false;
             _position = new Vector2(rnd.Next(0, w - 75), 0);
         }
     }
