@@ -1,3 +1,5 @@
+using System;
+
 namespace group_5_assignment7;
 
 using Microsoft.Xna.Framework;
@@ -7,31 +9,29 @@ public class Waterdrop
 {
     private Texture2D _water;
     private Vector2 _position = Vector2.Zero;
-    private float _velocity ;
+    public float velocity ;
+    private Random rnd = new Random();
     
-    public bool isAlive = true;
+    //public bool isAlive = true;
     
     
     
-    public Waterdrop(Texture2D waterdrop, Vector2 pos, float v)
+    public Waterdrop(Texture2D waterdrop, Vector2 pos)
     {
         _water = waterdrop;
         _position = pos;
-        _velocity = v;
-        
-        //Random rnd = new Random();
-        _velocity = v;
-        //rnd.Next(1, 50)/10f;
+        velocity = 2f;
     }
 
-    public void Update(float h)
+    public void Update(int w, float h)
     {
         //_velocity += acceleration;
-        _position.Y += _velocity;
+        _position.Y += velocity;
 
         if (_position.Y > h)
         {
-            isAlive = false;
+            //isAlive = false;
+            _position = new Vector2(rnd.Next(0, w - 75), 0);
         }
     }
 

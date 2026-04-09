@@ -22,7 +22,7 @@ public class Game1 : Game
     private bool _paused = false;
 
     private int _rounds = 1;
-    private float velocity = 2f;
+    //private float velocity = 2f;
 
     public Game1()
     {
@@ -60,15 +60,16 @@ public class Game1 : Game
         } else if (args.Character == 'r' )
         {
             //restart
+            Console.WriteLine("Restarting game");
             _timer = 0;
+            _rounds = 1;
             _fireboy_position =  new Vector2(Window.ClientBounds.Width / 2f, 300f);
             drops.Clear();
             for (int i = 0; i < 5; i++)
             {
-                drops.Add(new Waterdrop(_waterdrop, new Vector2(rnd.Next(0, Window.ClientBounds.Width -75), 0f), 2f));
+                drops.Add(new Waterdrop(_waterdrop, new Vector2(rnd.Next(0, Window.ClientBounds.Width -75), 0f)));
             }
             
-
         }
 
     }
@@ -84,7 +85,7 @@ public class Game1 : Game
         
         for (int i = 0; i < 5; i++)
         {
-            drops.Add(new Waterdrop(_waterdrop, new Vector2(rnd.Next(0, Window.ClientBounds.Width - 75), 0f), velocity));
+            drops.Add(new Waterdrop(_waterdrop, new Vector2(rnd.Next(0, Window.ClientBounds.Width - 75), 0f)));
         }
     }
 
@@ -93,18 +94,13 @@ public class Game1 : Game
         if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed ||
             Keyboard.GetState().IsKeyDown(Keys.Escape))
             Exit();
-        _timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
         
         if (!_paused)
         {
-            for (int i = 0; i < drops.Count; i++)
+            _timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
+            foreach (Waterdrop w in drops)
             {
-                drops[i].Update(Window.ClientBounds.Height);
-
-                if (!drops[i].isAlive)
-                {
-                    drops[i] = new Waterdrop(_waterdrop, new Vector2(rnd.Next(0, Window.ClientBounds.Width - 75), 0f),  velocity);
-                }
+                w.Update(Window.ClientBounds.Width, Window.ClientBounds.Height);
             }
         }
         
@@ -112,13 +108,14 @@ public class Game1 : Game
         //NEXT ROUND after 5 seconds
         if (_timer >= 5*_rounds)
         {
-            velocity += 1.0f;
-            Console.WriteLine("completed round: "+ _rounds);
+            foreach (Waterdrop w in drops)
+            {
+                w.velocity += 1;
+            }
+            //included for debugging
+            Console.WriteLine("completed round: "+ _rounds + ", new velocity: "+ drops[0].velocity);
             _rounds++;
         }
-        
-
-        // TODO: Add your update logic here
 
         base.Update(gameTime);
     }
