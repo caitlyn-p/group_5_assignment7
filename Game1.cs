@@ -57,11 +57,11 @@ public class Game1 : Game
     private void TextInputCallback(object sender, TextInputEventArgs args)
     {
         
-        if (args.Character == 'a' )
+        if (args.Character == 'a' && _paused == false)
         {
             //left
             _fireboy_position.X = Math.Max(0, _fireboy_position.X - 20f);
-        } else if (args.Character == 'd' )
+        } else if (args.Character == 'd'  && _paused == false)
         {
             //right
             //fireboy image is about 75 in width, but cant call yet bc hasnt been loaded in
