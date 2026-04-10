@@ -11,8 +11,13 @@ public class Waterdrop
     private Vector2 _position = Vector2.Zero;
     public float velocity ;
     private Random rnd = new Random();
-    
-    
+
+    //want to access position
+    public Vector2 Position
+    {
+        get { return _position; }
+        set { _position = value; }
+    }
     
     public Waterdrop(Texture2D waterdrop, Vector2 pos)
     {
@@ -20,6 +25,7 @@ public class Waterdrop
         _position = pos;
         velocity = 2f;
     }
+    
 
     public void Update(int w, float h)
     {

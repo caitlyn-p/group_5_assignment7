@@ -23,6 +23,19 @@ public class Game1 : Game
 
     private int _rounds = 1;
     //private float velocity = 2f;
+    
+    //scoring variables
+    private int _score = 0;
+
+    private int _maxRounds = 3;
+    private bool _gameWon = false;
+    private bool _gameLost = false;
+    
+    //adding lives (can remove if we don't want this)
+    private int _lives = 5;
+    private int _maxLives = 5;
+    
+    private SpriteFont _font;
 
     public Game1()
     {
@@ -63,6 +76,13 @@ public class Game1 : Game
             Console.WriteLine("Restarting game");
             _timer = 0;
             _rounds = 1;
+            
+            //added some scoring reset logic'
+            _lives = _maxLives;
+            _score = 0;
+            _gameWon = false;
+            _gameLost = false;
+
             _fireboy_position =  new Vector2(Window.ClientBounds.Width / 2f, 300f);
             drops.Clear();
             for (int i = 0; i < 5; i++)
@@ -87,6 +107,9 @@ public class Game1 : Game
         {
             drops.Add(new Waterdrop(_waterdrop, new Vector2(rnd.Next(0, Window.ClientBounds.Width - 75), 0f)));
         }
+        
+        //adding font
+        _font = Content.Load<SpriteFont>("fonts/font");
     }
 
     protected override void Update(GameTime gameTime)
@@ -94,6 +117,12 @@ public class Game1 : Game
         if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed ||
             Keyboard.GetState().IsKeyDown(Keys.Escape))
             Exit();
+       
+        //will stop game if either game won or lost is true
+        if (_gameWon || _gameLost)
+        {
+            return;
+        }
         
         if (!_paused)
         {
@@ -101,12 +130,19 @@ public class Game1 : Game
             foreach (Waterdrop w in drops)
             {
                 w.Update(Window.ClientBounds.Width, Window.ClientBounds.Height);
+                
+                // if droplet reaches bottom, fireboy dodged it
+                if (w.Position.Y <= 1f)
+                {
+                    _score++;
+                }
+                
             }
         }
         
         
-        //NEXT ROUND after 5 seconds
-        if (_timer >= 5*_rounds)
+        //NEXT ROUND after 15 seconds (**Kavya changed this from 5 to 15 btw)
+        if (_timer >= 15*_rounds)
         {
             foreach (Waterdrop w in drops)
             {
@@ -115,6 +151,45 @@ public class Game1 : Game
             //included for debugging
             Console.WriteLine("completed round: "+ _rounds + ", new velocity: "+ drops[0].velocity);
             _rounds++;
+        }
+        
+        if (_rounds > _maxRounds)
+        {
+            _gameWon = true;
+        }
+        
+        //lose condition (if fireboy hots a water drop)
+        Rectangle fireboyBox = new Rectangle(
+            (int)_fireboy_position.X,
+            (int)_fireboy_position.Y,
+            40,
+            40
+        );
+
+        foreach (Waterdrop w in drops)
+        {
+            Rectangle dropBox = new Rectangle(
+                (int)w.Position.X,
+                (int)w.Position.Y,
+                30,
+                30
+            );
+
+            if (fireboyBox.Intersects(dropBox))
+            {
+                _lives--;
+
+                // reuse same idea as restart
+                w.Position = new Vector2(
+                    rnd.Next(0, Window.ClientBounds.Width - 75),
+                    0f
+                );
+
+                if (_lives <= 0)
+                {
+                    _gameLost = true;
+                }
+            }
         }
 
         base.Update(gameTime);
@@ -142,6 +217,27 @@ public class Game1 : Game
         {
             w.Draw(_spriteBatch);
         }
+        
+        _spriteBatch.DrawString(
+            _font,
+            "Score: " + _score,
+            new Vector2(10, 10),
+            Color.Black
+        );
+
+        _spriteBatch.DrawString(
+            _font,
+            "Round: " + _rounds,
+            new Vector2(10, 40),
+            Color.Black
+        );
+        
+        _spriteBatch.DrawString(
+            _font,
+            "Lives: " + _lives,
+            new Vector2(10, 70),
+            Color.DarkRed
+        );
 
         _spriteBatch.End();
 
